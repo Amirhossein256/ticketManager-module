@@ -1,0 +1,5 @@
+{
+    "require": {
+        "rap2hpoutre/fast-excel": "^3.2"
+    }
+}

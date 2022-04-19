@@ -47,40 +47,14 @@ function ticketManager_deActivate()
 
 function ticketManager_output($vars)
 {
+    include __DIR__ . '/lib/functions.php';
 
-    if (isset($_POST['ticketId']) and !empty($_POST['status'])) {
-        try {
-            Capsule::table('mod_ticketManager')->updateOrInsert([
-                'ticket_id' => $_POST['ticketId'],
-            ],
-                [
-                    'status' => $_POST['status'],
-                    'created_at' => \Carbon\Carbon::now()
-                ]);
-            echo json_encode(['ok']);
-            http_response_code(200);
-            die();
-        } catch (\Throwable $e) {
-            echo json_encode(['errors' => $e->getMessage()]);
-            http_response_code(422);
-            die();
-        }
-    }
-
-    if (isset($_POST['newTag']) and !empty($_POST['newTag'])) {
-        Capsule::table('mod_tags')->insert([
-            'tag' => trim($_POST['newTag']),
-            'created_at' => \Carbon\Carbon::now()
-        ]);
-        echo json_encode(['ok']);
-        http_response_code(200);
-        die();
-    }
+    ajaxHandler();
+    addNewTag();
 
     $tags = Capsule::table('mod_tags')
         ->get();
-    $tickets = Capsule::table('mod_ticketManager')
-        ->get();
+    $tickets = filterHandler();
 
     if ($_GET['action'] == "add") {
 
@@ -90,3 +64,4 @@ function ticketManager_output($vars)
         include __DIR__ . "/views/dashboard.php";
     }
 }
+

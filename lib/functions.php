@@ -39,3 +39,60 @@ function createTableTicketManager(): void
             );
     }
 }
+
+/**
+ * @return void
+ */
+function ajaxHandler(): void
+{
+    if (isset($_POST['ticketId']) and !empty($_POST['status'])) {
+        try {
+            Capsule::table('mod_ticketManager')->updateOrInsert([
+                'ticket_id' => $_POST['ticketId'],
+            ],
+                [
+                    'status' => $_POST['status'],
+                    'created_at' => \Carbon\Carbon::now()
+                ]);
+            echo json_encode(['ok']);
+            http_response_code(200);
+            die();
+        } catch (\Throwable $e) {
+            echo json_encode(['errors' => $e->getMessage()]);
+            http_response_code(422);
+            die();
+        }
+    }
+}
+
+
+function filterHandler()
+{
+    if (isset($_GET['filter']) and !empty($_GET['filter'])) {
+        $tickets = Capsule::table('mod_ticketManager')
+            ->where('status', $_GET['filter'])
+            ->get();
+
+    } else {
+        $tickets = Capsule::table('mod_ticketManager')
+            ->get();
+    }
+    return $tickets;
+}
+
+
+/**
+ * @return void
+ */
+function addNewTag(): void
+{
+    if (isset($_POST['newTag']) and !empty($_POST['newTag'])) {
+        Capsule::table('mod_tags')->insert([
+            'tag' => trim($_POST['newTag']),
+            'created_at' => \Carbon\Carbon::now()
+        ]);
+        echo json_encode(['ok']);
+        http_response_code(200);
+        die();
+    }
+}
