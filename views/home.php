@@ -25,7 +25,6 @@ $id = $vars['ticketid'];
         </div>
     </div>
 </form>
-
 <script>
 
     $('#inlineFormCustomSelect').change(function () {

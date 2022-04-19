@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
@@ -45,6 +46,16 @@ function createTableTicketManager(): void
  */
 function ajaxHandler(): void
 {
+    if (isset($_POST['deleted']) and !empty($_POST['deleted'])) {
+        Capsule::table('mod_tags')
+        ->where('id', $_POST['deleted'])
+        ->delete();
+
+        echo json_encode(['ok']);
+        http_response_code(200);
+        die();
+    }
+
     if (isset($_POST['ticketId']) and !empty($_POST['status'])) {
         try {
             Capsule::table('mod_ticketManager')->updateOrInsert([
@@ -68,14 +79,39 @@ function ajaxHandler(): void
 
 function filterHandler()
 {
+    include __DIR__ . "/../vendor/autoload.php";
+
     if (isset($_GET['filter']) and !empty($_GET['filter'])) {
         $tickets = Capsule::table('mod_ticketManager')
-            ->where('status', $_GET['filter'])
-            ->get();
+            ->join('tbltickets', 'tbltickets.id', '=', 'mod_ticketManager.ticket_id')
+            ->join('tblclients', 'tbltickets.userid', '=', 'tblclients.id')
+            ->join('tblticketdepartments', 'tbltickets.did', '=', 'tblticketdepartments.id')
+            ->select('mod_ticketManager.status',
+                'mod_ticketManager.id',
+                'mod_ticketManager.ticket_id',
+                'mod_ticketManager.created_at',
+                'tbltickets.title',
+                'tbltickets.status as cstatus',
+                'tblclients.firstname'
+            )
+            ->where('mod_ticketManager.status', $_GET['filter'])
+            ->paginate(5, ['*'], 'page', $_GET['page']);
 
     } else {
-        $tickets = Capsule::table('mod_ticketManager')
-            ->get();
+
+            $tickets = Capsule::table('mod_ticketManager')
+                ->join('tbltickets', 'tbltickets.id', '=', 'mod_ticketManager.ticket_id')
+                ->join('tblclients', 'tbltickets.userid', '=', 'tblclients.id')
+                ->join('tblticketdepartments', 'tbltickets.did', '=', 'tblticketdepartments.id')
+                ->select('mod_ticketManager.status',
+                    'mod_ticketManager.id',
+                    'mod_ticketManager.ticket_id',
+                    'mod_ticketManager.created_at',
+                    'tbltickets.title',
+                    'tbltickets.status as cstatus',
+                    'tblclients.firstname'
+                )
+                ->paginate(5, ['*'], 'page', $_GET['page']);
     }
     return $tickets;
 }

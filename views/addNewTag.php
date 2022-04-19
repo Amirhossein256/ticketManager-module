@@ -11,13 +11,34 @@
     </div><!-- /.col-lg-6 -->
 </div><!-- /.row -->
 
-<ul id='menu'>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Tag Name</th>
+        <th scope="col">Created At</th>
+        <th scope="col">Action</th>
+
+    </tr>
+    </thead>
+    <tbody>
     <?php
+
     foreach ($tags as $tag) {
-        echo "<li>$tag->tag</li>";
+        echo "
+     <tr id='menu'>
+        <td>$tag->id</td>
+        <td>$tag->tag</td>
+        <td>$tag->created_at</td>
+        <td><a class='btn btn-danger delete' onclick='deleteItem($tag->id)' deleted='$tag->id'> delete </a></td>
+
+    </tr>
+        ";
     }
     ?>
-</ul>
+
+    </tbody>
+</table>
 
 <script>
     $('#addNew').click(function (e) {
@@ -32,6 +53,18 @@
             },
         })
         $('#addNewBtn').val(null);
-        $("#menu").append("<li>" + value + "</li>");
+        location.reload();
     })
+
+    function deleteItem(id) {
+        $.ajax({
+            url: "addonmodules.php?module=ticketManager",
+            cache: false,
+            type: "POST",
+            data: {
+                deleted: id
+            },
+        })
+        location.reload();
+    }
 </script>

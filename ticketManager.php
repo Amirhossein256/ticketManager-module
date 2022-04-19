@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 function ticketManager_config()
 {
@@ -29,7 +30,7 @@ function ticketManager_activate()
         createTableTags();
         return [
             'status' => 'success',
-            'description' => 'moddooole shoma ba movafaghiat faal shod XD enjoy Use :)'
+            'description' => 'Activate successfully enjoy Use :)'
         ];
     } catch (\Exception $e) {
         return [
@@ -48,14 +49,20 @@ function ticketManager_deActivate()
 function ticketManager_output($vars)
 {
     include __DIR__ . '/lib/functions.php';
+    include __DIR__ . '/vendor/autoload.php';
 
     ajaxHandler();
     addNewTag();
+
 
     $tags = Capsule::table('mod_tags')
         ->get();
     $tickets = filterHandler();
 
+    if ($_GET['excel']) {
+        (new FastExcel(collect($tickets)->toArray()['data']))->export(__DIR__ . '/storage/file.xlsx');
+        header('Location: http://127.0.0.1/whmcs/modules/addons/ticketManager/storage/file.xlsx');
+    }
     if ($_GET['action'] == "add") {
 
         include __DIR__ . "/views/addNewTag.php";

@@ -2,50 +2,59 @@
 
 <div class="btn-group float-right" role="group" aria-label="...">
     <form action="#" method="get">
-      <a style='margin: 5px;' class='btn btn-default btn-primary' href='addonmodules.php?module=ticketManager'> All </a>
-
-        <?php
-        foreach ($tags as $tag) {
-            echo "<a style='margin: 5px;' class='btn btn-default btn-danger' href='addonmodules.php?module=ticketManager&filter={$tag->tag}'> {$tag->tag} </a>";
-        }
-        ?>
-
+        <a style='margin: 5px;' class='btn btn-default btn-primary' href='addonmodules.php?module=ticketManager'>
+            All </a>
+        <!-- Single button -->
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                Filter <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <?php
+                foreach ($tags as $tag) {
+                    echo "<li><a style='margin: 5px;' href='addonmodules.php?module=ticketManager&filter={$tag->tag}'> {$tag->tag}</a></li>";
+                }
+                ?>
+            </ul>
+        </div>
     </form>
 </div>
-<?php
-//var_dump($tickets);
-//die();
-?>
+
+<button class="btn btn-success" onclick="excel()"> Export Exel</button>
+
+        <label for="files" class="btn btn-default pull-right">Import Exel</label>
+        <input id="files" type="file" class="btn btn-default"  style="visibility:hidden;"/>
+
+
 <table class="table">
     <thead>
     <tr>
         <th scope="col">Id</th>
         <th scope="col">Ticket Id</th>
-        <th scope="col">Status</th>
+        <th scope="col">Client Status</th>
         <th scope="col">subject</th>
         <th scope="col">Name</th>
-        <th scope="col">Department</th>
+        <th scope="col">Ticket Status</th>
         <th scope="col">Created At</th>
+        <th scope="col">Show</th>
     </tr>
     </thead>
     <tbody>
     <?php
+
     foreach ($tickets as $ticket) {
-        $command = 'GetTicket';
-        $postData = array(
-            'ticketid' => $ticket->id,
-        );
-        $results = localAPI($command, $postData);
 
         echo "
      <tr>
         <th scope='row'>$ticket->id</th>
         <td>$ticket->ticket_id</td>
         <td>$ticket->status</td>
-        <td>$results[subject]</td>
-        <td>$results[name]</td>
-        <td>$results[deptname]</td>
+        <td>$ticket->title</td>
+        <td>$ticket->firstname</td>
+        <td>$ticket->cstatus</td>
         <td>$ticket->created_at</td>
+        <td><a class='btn btn-success' href='supporttickets.php?action=view&id=$ticket->ticket_id'>show</a></td>
     </tr>
         ";
     }
@@ -54,3 +63,30 @@
 
     </tbody>
 </table>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <?php
+        $negativePage = $_GET["page"] - 1;
+        $PositivePage = $_GET["page"] + 1;
+
+        if (isset($_GET['filter'])) {
+            echo "
+         <li class='page-item'><a class='page-link' href='addonmodules.php?module=ticketManager&filter=$_GET[filter]&page=$negativePage'>Previous</a></li>
+        <li class='page-item'><a class='page-link' href='addonmodules.php?module=ticketManager&filter=$_GET[filter]&page=$PositivePage'>Next</a></li>
+            ";
+        } else {
+            echo "
+         <li class='page-item'><a class='page-link' href='addonmodules.php?module=ticketManager&page=$negativePage'>Previous</a></li>
+        <li class='page-item'><a class='page-link' href='addonmodules.php?module=ticketManager&page=$PositivePage'>Next</a></li>
+            ";
+        }
+        ?>
+
+    </ul>
+</nav>
+<script>
+    function excel() {
+        var thisLink = window.location.href;
+        window.location = thisLink + '&excel=true';
+    }
+</script>
