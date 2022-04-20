@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as Capsule;
-
+use Rap2hpoutre\FastExcel\FastExcel;
 /**
  * @return void
  */
@@ -132,3 +132,26 @@ function addNewTag(): void
         die();
     }
 }
+
+/**
+ * @return void
+ */
+function fileImportHandler() : void
+{
+    if (isset($_FILES) and !empty($_FILES['file']['name'])) {
+
+        $fileFormat = explode('.', $_FILES['file']['name'])[1];
+        $path =  __DIR__ . '/storage/tmp/file.' . $fileFormat;
+        if ($fileFormat == "xlsx") {
+
+            move_uploaded_file($_FILES['file']['tmp_name'],$path);
+        }
+        (new FastExcel)->import($path, function ($line) use (&$data) {
+
+            $data[] = $line;
+        });
+
+        Capsule::table('mod_ticketManager')->insert($data);
+    }
+}
+

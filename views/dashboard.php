@@ -21,10 +21,8 @@
     </form>
 </div>
 
-<button class="btn btn-success" onclick="excel()"> Export Exel</button>
-
-        <label for="files" class="btn btn-default pull-right">Import Exel</label>
-        <input id="files" type="file" class="btn btn-default"  style="visibility:hidden;"/>
+<button class="btn btn-success" onclick="excel()"> Export Excel</button>
+<button class="btn btn-warning" onclick="excel()"> Export Pdf</button>
 
 
 <table class="table">
@@ -63,6 +61,20 @@
 
     </tbody>
 </table>
+
+<div class="row">
+    <div class="col-lg-1">
+        <form action="addonmodules.php?module=ticketManager" method="post" enctype="multipart/form-data">
+            <div class="input-group">
+               <input name="file" value="Import Exel" type="file" class="btn btn-default"/>
+                <span class="input-group-btn">
+        <button id="addNew" class="btn btn-primary" type="submit">Add</button>
+      </span>
+            </div><!-- /input-group -->
+        </form>
+    </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+
 <nav aria-label="Page navigation example">
     <ul class="pagination">
         <?php

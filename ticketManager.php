@@ -48,11 +48,14 @@ function ticketManager_deActivate()
 
 function ticketManager_output($vars)
 {
+    $baseUrl = 'http://127.0.0.1/whmcs';
+
     include __DIR__ . '/lib/functions.php';
     include __DIR__ . '/vendor/autoload.php';
 
     ajaxHandler();
     addNewTag();
+    fileImportHandler();
 
 
     $tags = Capsule::table('mod_tags')
@@ -61,7 +64,7 @@ function ticketManager_output($vars)
 
     if ($_GET['excel']) {
         (new FastExcel(collect($tickets)->toArray()['data']))->export(__DIR__ . '/storage/file.xlsx');
-        header('Location: http://127.0.0.1/whmcs/modules/addons/ticketManager/storage/file.xlsx');
+        header('Location: ' . $baseUrl . '/modules/addons/ticketManager/storage/file.xlsx');
     }
     if ($_GET['action'] == "add") {
 
