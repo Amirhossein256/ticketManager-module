@@ -22,7 +22,7 @@
 </div>
 
 <button class="btn btn-success" onclick="excel()"> Export Excel</button>
-<button class="btn btn-warning" onclick="excel()"> Export Pdf</button>
+<button class="btn btn-warning" onclick="pdf()"> Export Pdf</button>
 
 
 <table class="table">
@@ -79,7 +79,10 @@
     <ul class="pagination">
         <?php
         $negativePage = $_GET["page"] - 1;
-        $PositivePage = $_GET["page"] + 1;
+
+        isset($_GET["page"]) ? $PositivePage = $_GET["page"] + 1 : $PositivePage = $_GET["page"] + 2;
+
+
 
         if (isset($_GET['filter'])) {
             echo "
@@ -100,5 +103,9 @@
     function excel() {
         var thisLink = window.location.href;
         window.location = thisLink + '&excel=true';
+    }
+    function pdf() {
+        var thisLink = window.location.href;
+        window.location = thisLink + '&pdf=true';
     }
 </script>

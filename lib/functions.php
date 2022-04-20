@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Rap2hpoutre\FastExcel\FastExcel;
+
 /**
  * @return void
  */
@@ -48,8 +49,8 @@ function ajaxHandler(): void
 {
     if (isset($_POST['deleted']) and !empty($_POST['deleted'])) {
         Capsule::table('mod_tags')
-        ->where('id', $_POST['deleted'])
-        ->delete();
+            ->where('id', $_POST['deleted'])
+            ->delete();
 
         echo json_encode(['ok']);
         http_response_code(200);
@@ -95,23 +96,23 @@ function filterHandler()
                 'tblclients.firstname'
             )
             ->where('mod_ticketManager.status', $_GET['filter'])
-            ->paginate(5, ['*'], 'page', $_GET['page']);
+            ->paginate(10, ['*'], 'page', $_GET['page']);
 
     } else {
 
-            $tickets = Capsule::table('mod_ticketManager')
-                ->join('tbltickets', 'tbltickets.id', '=', 'mod_ticketManager.ticket_id')
-                ->join('tblclients', 'tbltickets.userid', '=', 'tblclients.id')
-                ->join('tblticketdepartments', 'tbltickets.did', '=', 'tblticketdepartments.id')
-                ->select('mod_ticketManager.status',
-                    'mod_ticketManager.id',
-                    'mod_ticketManager.ticket_id',
-                    'mod_ticketManager.created_at',
-                    'tbltickets.title',
-                    'tbltickets.status as cstatus',
-                    'tblclients.firstname'
-                )
-                ->paginate(5, ['*'], 'page', $_GET['page']);
+        $tickets = Capsule::table('mod_ticketManager')
+            ->join('tbltickets', 'tbltickets.id', '=', 'mod_ticketManager.ticket_id')
+            ->join('tblclients', 'tbltickets.userid', '=', 'tblclients.id')
+            ->join('tblticketdepartments', 'tbltickets.did', '=', 'tblticketdepartments.id')
+            ->select('mod_ticketManager.status',
+                'mod_ticketManager.id',
+                'mod_ticketManager.ticket_id',
+                'mod_ticketManager.created_at',
+                'tbltickets.title',
+                'tbltickets.status as cstatus',
+                'tblclients.firstname'
+            )
+            ->paginate(10, ['*'], 'page', $_GET['page']);
     }
     return $tickets;
 }
@@ -136,15 +137,15 @@ function addNewTag(): void
 /**
  * @return void
  */
-function fileImportHandler() : void
+function fileImportHandler(): void
 {
     if (isset($_FILES) and !empty($_FILES['file']['name'])) {
 
         $fileFormat = explode('.', $_FILES['file']['name'])[1];
-        $path =  __DIR__ . '/storage/tmp/file.' . $fileFormat;
+        $path = __DIR__ . '/storage/tmp/file.' . $fileFormat;
         if ($fileFormat == "xlsx") {
 
-            move_uploaded_file($_FILES['file']['tmp_name'],$path);
+            move_uploaded_file($_FILES['file']['tmp_name'], $path);
         }
         (new FastExcel)->import($path, function ($line) use (&$data) {
 
@@ -155,3 +156,19 @@ function fileImportHandler() : void
     }
 }
 
+function getAllTickets(): \Illuminate\Support\Collection
+{
+    return Capsule::table('mod_ticketManager')
+        ->join('tbltickets', 'tbltickets.id', '=', 'mod_ticketManager.ticket_id')
+        ->join('tblclients', 'tbltickets.userid', '=', 'tblclients.id')
+        ->join('tblticketdepartments', 'tbltickets.did', '=', 'tblticketdepartments.id')
+        ->select('mod_ticketManager.status',
+            'mod_ticketManager.id',
+            'mod_ticketManager.ticket_id',
+            'mod_ticketManager.created_at',
+            'tbltickets.title',
+            'tbltickets.status as cstatus',
+            'tblclients.firstname'
+        )
+        ->get();
+}

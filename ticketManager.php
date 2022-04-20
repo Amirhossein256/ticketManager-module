@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Rap2hpoutre\FastExcel\FastExcel;
 
@@ -66,6 +67,26 @@ function ticketManager_output($vars)
         (new FastExcel(collect($tickets)->toArray()['data']))->export(__DIR__ . '/storage/file.xlsx');
         header('Location: ' . $baseUrl . '/modules/addons/ticketManager/storage/file.xlsx');
     }
+
+    if ($_GET['pdf']) {
+
+        $tickets = getAllTickets();
+
+        ob_start();
+        include __DIR__ . '/views/pdfTemplate.php';
+        $output = ob_get_contents();
+        ob_end_clean();
+
+        $mpdf = new mPDF('ar-s', 'A4');
+        $mpdf->SetDirectionality('rtl');
+        $mpdf->WriteHTML($output);
+
+        header('Content-Type: application/pdf');
+        echo $mpdf->Output();
+
+        die();
+    }
+
     if ($_GET['action'] == "add") {
 
         include __DIR__ . "/views/addNewTag.php";

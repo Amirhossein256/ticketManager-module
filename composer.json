@@ -1,6 +1,7 @@
 {
     "require": {
         "rap2hpoutre/fast-excel": "^3.2",
-        "illuminate/pagination": "^9.8"
+        "illuminate/pagination": "^9.8",
+        "mpdf/mpdf": "^6.1"
     }
 }
